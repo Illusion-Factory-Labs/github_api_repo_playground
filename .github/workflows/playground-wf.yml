@@ -45,44 +45,6 @@ jobs:
         id: gh-cli-ops
         env:
           GH_TOKEN: ${{ env.GHTOKEN }}
-        run: |
-          set -euo pipefail
-
-          if [[ -z "${GH_TOKEN:-}" ]]; then
-            echo "GH_TOKEN is empty. GitHub App token was not exported."
-            exit 1
-          fi
-
-          REPO="${{ github.repository }}"
-          SOURCE_ENV="${{ matrix.AMBIENTE }}"
-          DEST_ENV="$FINAL_ENV"
-          SOURCE_API_ENDPOINT="repos/$REPO/environments/$SOURCE_ENV/variables"
-          DEST_API_ENDPOINT="repos/$REPO/environments/$DEST_ENV/variables"
-
-          response="$(gh api "$SOURCE_API_ENDPOINT")"
-          dest_response="$(gh api "$DEST_API_ENDPOINT")"
-
-          declare -A DEST_VAR_NAMES=()
-          while read -r existing_name; do
-            [[ -z "$existing_name" ]] && continue
-            DEST_VAR_NAMES["$existing_name"]=1
-          done < <(jq -r '(.variables // [])[].name' <<< "$dest_response")
-
-          if [[ "$(jq -r '(.variables // []) | length' <<< "$response")" -eq 0 ]]; then
-              echo "No variables found for environment: $SOURCE_ENV"
-              exit 0
-          fi
-
-          jq -c '(.variables // [])[]' <<< "$response" | while read -r var;
-          do
-              name=$(echo "$var" | jq -r '.name')
-              value=$(echo "$var" | jq -r '.value')
-
-              if [[ -n "${DEST_VAR_NAMES[$name]:-}" ]]; then
-                echo "Skipping variable '$name' because it already exists in '$DEST_ENV'."
-                continue
-              fi
-              
-              gh api --method POST -H 'Accept: application/vnd.github+json' "$DEST_API_ENDPOINT" -f name="$name" -f value="$value"
-              DEST_VAR_NAMES["$name"]=1
-          done
+        with:
+          SOURCE_ENV: ${{ matrix.AMBIENTE }}
+          FINAL_ENV: ${{ env.FINAL_ENV }}
