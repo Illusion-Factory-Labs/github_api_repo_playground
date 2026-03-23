@@ -42,13 +42,18 @@ jobs:
       
       - name: "Get environments with GH CLI using the generated token"
         id: gh-cli-ops
-        env:
-          GH_TOKEN: ${{ env.GHTOKEN }}
         run: |
           set -euo pipefail
 
-          REPO="${{ github.repository}}"
-          ENV_NAME="${{ env.FINAL_ENV }}"
+          if [[ -z "${GHTOKEN:-}" ]]; then
+            echo "GHTOKEN is empty. GitHub App token was not exported."
+            exit 1
+          fi
+
+          export GH_TOKEN="$GHTOKEN"
+
+          REPO="${{ github.repository }}"
+          ENV_NAME="$FINAL_ENV"
 
           declare -A ENV_VARS=()
 
