@@ -41,10 +41,10 @@ jobs:
         id: generate-token
         uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
       
-      - name: "Get environments with GH CLI using the generated token"
+      - name: "Copy variables to placeholder environment"
+        if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
         id: gh-cli-ops
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/copy-env-vars@main
         with:
           SOURCE_ENVIRONMENT: ${{ matrix.AMBIENTE }}
           DESTINATION_ENVIRONMENT: ${{ env.FINAL_ENV }}
-          
