@@ -47,3 +47,4 @@ jobs:
         with:
           SOURCE_ENVIRONMENT: ${{ matrix.AMBIENTE }}
           DESTINATION_ENVIRONMENT: ${{ env.FINAL_ENV }}
+          
