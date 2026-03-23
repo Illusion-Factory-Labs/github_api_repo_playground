@@ -43,31 +43,23 @@ jobs:
       
       - name: "Get environments with GH CLI using the generated token"
         id: gh-cli-ops
+        env:
+          GH_TOKEN: ${{ env.GHTOKEN }}
         run: |
           set -euo pipefail
 
-          if [[ -z "${GHTOKEN:-}" ]]; then
-            echo "GHTOKEN is empty. GitHub App token was not exported."
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "GH_TOKEN is empty. GitHub App token was not exported."
             exit 1
           fi
-
-          export GH_TOKEN="$GHTOKEN"
 
           REPO="${{ github.repository }}"
           SOURCE_ENV="${{ matrix.AMBIENTE }}"
           DEST_ENV="$FINAL_ENV"
           API_PATH="repos/$REPO/environments/$SOURCE_ENV/variables"
 
-          if ! response="$(gh api "$API_PATH" 2>&1)"; then
-            if [[ "$response" == *"Resource not accessible by integration"* ]] && [[ -n "${GH_PAT:-}" ]]; then
-              echo "GitHub App token sem acesso a variaveis de ambiente. Tentando fallback com GH_PAT."
-              export GH_TOKEN="$GH_PAT"
-              response="$(gh api "$API_PATH")"
-            else
-              echo "$response"
-              exit 1
-            fi
-          fi
+          gh api "$API_PATH"
+
 
           # if [[ "$(jq -r '(.variables // []) | length' <<< "$response")" -eq 0 ]]; then
           #   echo "No variables found for environment: $FINAL_ENV"
