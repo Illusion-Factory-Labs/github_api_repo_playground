@@ -44,7 +44,7 @@ jobs:
       - name: "Get environments with GH CLI using the generated token"
         id: gh-cli-ops
         env:
-          GH_TOKEN: ${{ env.GHTOKEN }}
+          GH_TOKEN: ${{ env.GHTOKEN}}
         run: |
           set -euo pipefail
 
