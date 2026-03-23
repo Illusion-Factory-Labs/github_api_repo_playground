@@ -55,13 +55,9 @@ jobs:
           REPO="${{ github.repository }}"
           ENV_NAME="$FINAL_ENV"
 
-          declare -A ENV_VARS=()
-
-          while IFS=$'\t' read -r k v; do
-            ENV_VARS["$k"]="$v"
-          done < <(gh api "repos/$REPO/environments/$ENV_NAME/variables" | jq -r '.variables[] | [.name, .value] | @tsv')
-
-          for k in "${!ENV_VARS[@]}"; do
-            echo "key=$k value=${ENV_VARS[$k]}"
+          gh api repos/iLLusion-Factory-Labs/github-repo-playground/environments/prd/variables | jq -c '.variables[]' | while read var;
+          do
+            name=$(echo "$var" | jq -r '.name')
+            value=$(echo "$var" | jq -r '.value')
+            echo "Variable Name: $name, Variable Value: $value"
           done
-          
