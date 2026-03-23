@@ -25,6 +25,7 @@ jobs:
     strategy:
       matrix:
         AMBIENTE: [des, prd, qa, tqs]
+    environment: ${{ matrix.AMBIENTE }}
     steps:
       - name: Generate token with GitHub App
         id: generate-token
