@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Generate token with GitHub App
         id: generate-token
-        uses: Illusionist/github-repo-templates/actions/auth/generate-gh-token@main
+        uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
       
       - name: "GitHub CLI Operations with Generated Token"
         id: gh-cli-ops
