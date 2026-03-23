@@ -29,6 +29,7 @@ jobs:
       
       - name: "GitHub CLI Operations with Generated Token"
         id: gh-cli-ops
+        env:
+          GH_TOKEN: ${{ env.GHTOKEN }}
         run: |
           gh api repos/${{ env.OWNER }}/${{ github.repository }} --jq '.full_name'
-          
