@@ -29,13 +29,18 @@ jobs:
       
       - name: "GitHub CLI Operations with Generated Token"
         id: gh-cli-ops
-        env:
-          GHTOKEN: ${{ env.GHTOKEN }}
         run: |
           echo "🔍 ===== [GH CLI] Verificando autenticação com o token do GitHub App. ====="
-          # Configura o GitHub CLI para usar o token gerado
-          gh auth login --with-token <<< "$GHTOKEN"
+          if [[ -z "$GHTOKEN" ]]; then
+            echo "❌ ===== [GH CLI] Token ausente. Verifique a geração do token do GitHub App. ====="
+            exit 1
+          fi
+
+          export GH_TOKEN="$GHTOKEN"
+
+          # O GH CLI usa GH_TOKEN automaticamente; não é necessário gh auth login.
+          gh auth status
           
           # Verifica a autenticação
-          echo "✅ ===== [GH CLI] Autenticação bem-sucedida. Exibindo informações do usuário autenticado. ====="
-          gh api user --jq '.login'
+          echo "✅ ===== [GH CLI] Autenticação bem-sucedida. Exibindo informações do repositório acessível pelo token. ====="
+          gh api repos/${{ github.repository }} --jq '.full_name'
