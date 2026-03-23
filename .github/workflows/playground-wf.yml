@@ -56,18 +56,16 @@ jobs:
           REPO="${{ github.repository }}"
           SOURCE_ENV="${{ matrix.AMBIENTE }}"
           DEST_ENV="$FINAL_ENV"
-          API_PATH="repos/$REPO/environments/$SOURCE_ENV/variables"
 
-          gh api "$API_PATH"
+          response="$(gh api repos/$REPO/environments/$SOURCE_ENV/variables)"
 
+          if [[ "$(jq -r '(.variables // []) | length' <<< "$response")" -eq 0 ]]; then
+              echo "No variables found for environment: prd"
+              exit 0
+          fi
 
-          # if [[ "$(jq -r '(.variables // []) | length' <<< "$response")" -eq 0 ]]; then
-          #   echo "No variables found for environment: $FINAL_ENV"
-          #   exit 0
-          # fi
-
-          # jq -c '(.variables // [])[]' <<< "$response" | while read -r var; do
-          #   name=$(echo "$var" | jq -r '.name')
-          #   value=$(echo "$var" | jq -r '.value')
-          #   echo "Variable Name: $name, Variable Value: $value"
-          # done
+          jq -c '(.variables // [])[]' <<< "$response" | while read -r var; do
+              name=$(echo "$var" | jq -r '.name')
+              value=$(echo "$var" | jq -r '.value')
+              echo "Variable Name: $name, Variable Value: $value"
+          done
