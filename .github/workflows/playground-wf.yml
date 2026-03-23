@@ -36,7 +36,5 @@ jobs:
         env:
           GH_TOKEN: ${{ env.GHTOKEN }}
         run: |
-          gh api repos/${{ github.repository }}/environments | jq -r '.environments[] | .name' > envs.txt
-          echo "Environments in the repository:"
-          cat envs.txt
-          echo "::notice title=ENVIRONMENTS::Environments in the repository: $(cat envs.txt)"
+          ${{ tojson(vars)}}
+          
