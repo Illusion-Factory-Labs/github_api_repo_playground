@@ -46,12 +46,12 @@ jobs:
         run: |
           set -euo pipefail
 
+          export GH_TOKEN="$GHTOKEN"
+
           if [[ -z "${GH_TOKEN:-}" ]]; then
             echo "GH_TOKEN is empty. GitHub App token was not exported."
             exit 1
           fi
-          
-          export GH_TOKEN="$GHTOKEN"
 
           REPO=${{ github.repository }}
           SOURCE_ENV="${{ matrix.AMBIENTE }}"
