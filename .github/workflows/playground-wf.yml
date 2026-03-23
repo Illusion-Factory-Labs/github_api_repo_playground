@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 env:
-  GLOBAL_REPO_VAR: "github-repo-variables"
+  GLOBAL_REPO_VAR: github-repo-variables
   GH_PAT: ${{ secrets.GH_PAT }}
   WF_APP_ID: ${{ secrets.WF_APP_ID }}
   WF_APP_PRIVATE_KEY: ${{ secrets.WF_APP_PRIVATE_KEY }}
@@ -36,5 +36,5 @@ jobs:
         env:
           GH_TOKEN: ${{ env.GHTOKEN }}
         run: |
-          ${{ tojson(vars)}}
+          echo "${{ tojson(vars) }}"
           
