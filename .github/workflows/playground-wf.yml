@@ -13,7 +13,6 @@ env:
   GH_PAT: ${{ secrets.GH_PAT }}
   WF_APP_ID: ${{ secrets.WF_APP_ID }}
   WF_APP_PRIVATE_KEY: ${{ secrets.WF_APP_PRIVATE_KEY }}
-  OWNER: ${{ github.repository_owner }}
 
 defaults:
   run:
@@ -27,7 +26,7 @@ jobs:
         AMBIENTE: [des, prd, qa, tqs]
     environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' &&  'tqs-vars' || matrix.AMBIENTE }}
     steps:
-      - name: Resolve environment name
+      - name: Export final environment name
         run: |
           if [[ "${{ matrix.AMBIENTE }}" == "prd" ]]; then
             echo "FINAL_ENV=prd-vars" >> $GITHUB_ENV
@@ -37,7 +36,7 @@ jobs:
             echo "FINAL_ENV=${{ matrix.AMBIENTE }}" >> $GITHUB_ENV
           fi
 
-      - name: Generate token with GitHub App
+      - name: Generate token
         id: generate-token
         uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
       
@@ -46,5 +45,22 @@ jobs:
         env:
           GH_TOKEN: ${{ env.GHTOKEN }}
         run: |
-          gh variables list --env ${{ env.FINAL_ENV }} -R ${{ github.repository }}
+          set -euo pipefail
+
+          REPO ="${{ github.repository}}"
+          OWNER="${{ github.repository_owner }}"
+          ENV_NAME="${{ env.FINAL_ENV }}"
+
+          declare -A ENV_VARS=()
+
+          while IFS=$'\t' read -r k v; do
+            ENV_VARS["$k"]="$v"
+          done < <(
+            gh api "repos/$OWNER/$REPO/environments/$ENV_NAME/variables" \
+            | jq -r '.variables[] | [.name, .value] | @tsv'
+          )
+
+          for k in "${!ENV_VARS[@]}"; do
+            echo "key=$k value=${ENV_VARS[$k]}"
+          done
           
