@@ -13,7 +13,7 @@ env:
   GH_PAT: ${{ secrets.GH_PAT }}
   WF_APP_ID: ${{ secrets.WF_APP_ID }}
   WF_APP_PRIVATE_KEY: ${{ secrets.WF_APP_PRIVATE_KEY }}
-  GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+  OWNER: ${{ github.repository_owner }}
 
 defaults:
   run:
@@ -30,17 +30,4 @@ jobs:
       - name: "GitHub CLI Operations with Generated Token"
         id: gh-cli-ops
         run: |
-          echo "🔍 ===== [GH CLI] Verificando autenticação com o token do GitHub App. ====="
-          if [[ -z "$GHTOKEN" ]]; then
-            echo "❌ ===== [GH CLI] Token ausente. Verifique a geração do token do GitHub App. ====="
-            exit 1
-          fi
-
-          export GH_TOKEN="$GHTOKEN"
-
-          # O GH CLI usa GH_TOKEN automaticamente; não é necessário gh auth login.
-          gh auth status
-          
-          # Verifica a autenticação
-          echo "✅ ===== [GH CLI] Autenticação bem-sucedida. Exibindo informações do repositório acessível pelo token. ====="
-          gh api repos/${{ github.repository }} --jq '.full_name'
+          gh api repos/${{ env.OWNER }}/${{ github.repository }} --jq '.full_name'
