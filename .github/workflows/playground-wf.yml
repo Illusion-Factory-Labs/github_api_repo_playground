@@ -57,7 +57,7 @@ jobs:
           echo ${{ github.repository }}
           echo $SOURCE_ENV
           echo $DEST_ENV
-          # gh api repos/${{ github.repository }}/environments/$SOURCE_ENV/variables
+          echo "gh api repos/${{ github.repository }}/environments/$SOURCE_ENV/variables"
 
           # if [[ "$(jq -r '(.variables // []) | length' <<< "$response")" -eq 0 ]]; then
           #   echo "No variables found for environment: $FINAL_ENV"
