@@ -13,6 +13,7 @@ env:
   GH_PAT: ${{ secrets.GH_PAT }}
   WF_APP_ID: ${{ secrets.WF_APP_ID }}
   WF_APP_PRIVATE_KEY: ${{ secrets.WF_APP_PRIVATE_KEY }}
+  GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
 
 defaults:
   run:
