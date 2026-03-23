@@ -43,8 +43,6 @@ jobs:
       
       - name: "Get environments with GH CLI using the generated token"
         id: gh-cli-ops
-        env:
-          GH_TOKEN: ${GHTOKEN}
         run: |
           set -euo pipefail
 
@@ -52,6 +50,8 @@ jobs:
             echo "GH_TOKEN is empty. GitHub App token was not exported."
             exit 1
           fi
+          
+          export GH_TOKEN="$GHTOKEN"
 
           REPO=${{ github.repository }}
           SOURCE_ENV="${{ matrix.AMBIENTE }}"
