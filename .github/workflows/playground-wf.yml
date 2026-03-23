@@ -32,4 +32,4 @@ jobs:
         env:
           GH_TOKEN: ${{ env.GHTOKEN }}
         run: |
-          gh api repos/${{ env.OWNER }}/${{ github.repository }} --jq '.full_name'
+          gh api repos/${{ github.repository }} --jq '.full_name'
