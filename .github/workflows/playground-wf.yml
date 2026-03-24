@@ -25,17 +25,6 @@ jobs:
         AMBIENTE: [des, prd, qa, tqs]
     environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' &&  'tqs-vars' || matrix.AMBIENTE }}
     steps:
-      - name: Export final environment name
-        if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
-        run: |
-          if [[ "${{ matrix.AMBIENTE }}" == "prd" ]]; then
-            echo "FINAL_ENV=prd-vars" >> $GITHUB_ENV
-          elif [[ "${{ matrix.AMBIENTE }}" == "tqs" ]]; then
-            echo "FINAL_ENV=tqs-vars" >> $GITHUB_ENV
-          else
-            echo "FINAL_ENV=${{ matrix.AMBIENTE }}" >> $GITHUB_ENV
-          fi
-          
       - name: Generate token
         uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
       
@@ -45,7 +34,7 @@ jobs:
         with:
           dry_run: "0"
           source_environment: ${{ matrix.AMBIENTE }}
-          destination_environment: ${{ env.FINAL_ENV }}
+          destination_environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}
       
       - name: "Debug vars source vs vars context"
         if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
