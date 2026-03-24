@@ -45,3 +45,8 @@ jobs:
         with:
           source_environment: ${{ matrix.AMBIENTE }}
           destination_environment: ${{ env.FINAL_ENV }}
+      
+      - name: "List variables in final environment"
+        run: |
+          echo "Variables in environment: $FINAL_ENV"
+          ${{ toJson(vars) }}
