@@ -48,7 +48,7 @@ jobs:
           echo "=== DEBUG: matrix.AMBIENTE ==="
           echo "${{ matrix.AMBIENTE }}"
           echo "=== DEBUG: FINAL_ENV ==="
-          echo "${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}"
+          echo FINAL_ENV="${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}"
 
           echo "=== DEBUG: vars context snapshot (toJson(vars)) ==="
           echo '${{ toJson(vars) }}' | jq .
