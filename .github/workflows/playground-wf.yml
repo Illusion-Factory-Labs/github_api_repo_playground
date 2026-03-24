@@ -35,7 +35,7 @@ jobs:
           else
             echo "FINAL_ENV=${{ matrix.AMBIENTE }}" >> $GITHUB_ENV
           fi
-
+          
       - name: Generate token
         uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
       
@@ -47,6 +47,22 @@ jobs:
           source_environment: ${{ matrix.AMBIENTE }}
           destination_environment: ${{ env.FINAL_ENV }}
       
-      - name: "List variables in environment"
+      - name: "Debug vars source vs vars context"
+        if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ env.GHTOKEN }}
         run: |
-          echo "${{ toJson(vars) }}"
+          set -euo pipefail
+
+          echo "=== DEBUG: matrix.AMBIENTE ==="
+          echo "${{ matrix.AMBIENTE }}"
+          echo "=== DEBUG: FINAL_ENV ==="
+          echo "$FINAL_ENV"
+
+          echo "=== DEBUG: vars context snapshot (toJson(vars)) ==="
+          echo '${{ toJson(vars) }}' | jq .
+
+          echo "=== DEBUG: GitHub API environment vars for FINAL_ENV ==="
+          gh api "repos/${{ github.repository }}/environments/$FINAL_ENV/variables" | jq .
