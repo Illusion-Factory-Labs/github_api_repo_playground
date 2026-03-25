@@ -28,7 +28,7 @@ jobs:
       - name: Generate token
         uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
       
-      - name: "Copy variables to placeholder environment"
+      - name: "Sync repo environment variables from '${{ matrix.AMBIENTE }}' to '${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}'"
         if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/sync-existing-env-vars@main
         with:
