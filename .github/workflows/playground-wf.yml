@@ -32,7 +32,7 @@ jobs:
         if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/sync-existing-env-vars@main
         with:
-          dry_run: "1"
+          dry_run: "0"
           source_environment: ${{ matrix.AMBIENTE }}
           destination_environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}
       
