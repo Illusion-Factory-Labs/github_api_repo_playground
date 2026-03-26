@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Turn on dry-run mode or off.'
+        description: 'Turn dry-run mode on or off.'
         required: false
         type: choice
         default: 'false'
