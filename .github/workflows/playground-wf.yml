@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Whether to perform a dry run (no actual changes) or execute the sync (default: false).'
+        description: 'Turn on dry-run mode or off.'
         required: false
         type: choice
         default: 'false'
@@ -12,10 +12,12 @@ on:
           - 'true'
           - 'false'
       variables_to_sync:
-        description: 'Optional comma of source variable names to sync. Accepted formats: JSON array (string) (e.g. ["VAR_A", "VAR_B"]) or comma-separated, no space, string (e.g. VAR_A,VAR_B). Use "[]" or empty to sync all source variables.'
+        description: >-
+          'Optional comma of source variable names to sync. Accepted formats: JSON array (e.g. ["VAR_A", "VAR_B"]) 
+          or comma-separated, no space, string (e.g. VAR_A,VAR_B).'
         required: false
         type: string
-        default: ""
+        default: '[]'
 
 permissions:
   contents: read
