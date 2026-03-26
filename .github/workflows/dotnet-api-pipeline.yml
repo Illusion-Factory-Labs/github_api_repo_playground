@@ -8,7 +8,7 @@ on:
         description: 'Turn dry-run mode on or off.'
         required: false
         type: choice
-        default: 'false'
+        default: 'true'
         options:
           - 'true'
           - 'false'
