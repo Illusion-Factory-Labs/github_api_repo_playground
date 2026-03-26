@@ -11,6 +11,11 @@ on:
           - 'true'
           - 'false'
         default: 'false'
+      variables_to_sync:
+        description: 'Optional list of source variable names to sync. Accepted formats: JSON array (string) (e.g. "[\"VAR_A\",\"VAR_B\"]") or comma-separated, no space, string (e.g. VAR_A,VAR_B). Use "[]" or empty to sync all source variables.'
+        required: false
+        type: string
+        default: '[]'
 
 permissions:
   contents: read
@@ -41,7 +46,8 @@ jobs:
         if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/sync-existing-env-vars@main
         with:
-          dry_run: ${{ inputs.dry_run == 'true' && '1' || '0' }}
+          dry_run: ${{ inputs.dry_run }}
+          variables: ${{ inputs.variables_to_sync }}
           source_environment: ${{ matrix.AMBIENTE }}
           destination_environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}
       
