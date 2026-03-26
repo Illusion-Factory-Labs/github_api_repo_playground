@@ -6,11 +6,11 @@ on:
       dry_run:
         description: 'Whether to perform a dry run (no actual changes) or execute the sync (default: false).'
         required: false
-        type: string
+        type: choice
+        default: 'false'
         options:
           - 'true'
           - 'false'
-        default: 'false'
       variables_to_sync:
         description: 'Optional list of source variable names to sync. Accepted formats: JSON array (string) (e.g. "[\"VAR_A\",\"VAR_B\"]") or comma-separated, no space, string (e.g. VAR_A,VAR_B). Use "[]" or empty to sync all source variables.'
         required: false
