@@ -1,0 +1,76 @@
+name: Playground Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Turn dry-run mode on or off.'
+        required: false
+        type: choice
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
+      variables_to_sync:
+        description: >-
+          'Optional comma of source variable names to sync. Accepted formats: JSON array (e.g. ["VAR_A", "VAR_B"]) or 
+          comma-separated, no space, string (e.g. VAR_A,VAR_B). Defaults to empty JSON array, which means sync all source variables.'
+        required: false
+        type: string
+        default: '[]'
+
+permissions:
+  contents: read
+
+env:
+  GLOBAL_REPO_VAR: github-repo-variables
+  GH_PAT: ${{ secrets.GH_PAT }}
+  WF_APP_ID: ${{ secrets.WF_APP_ID }}
+  WF_APP_PRIVATE_KEY: ${{ secrets.WF_APP_PRIVATE_KEY }}
+  GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test-variables:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        AMBIENTE: [des, prd, qa, tqs]
+    environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' &&  'tqs-vars' || matrix.AMBIENTE }}
+    steps:
+      - name: Generate token
+        uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
+      
+      - name: "Sync repo environment variables from '${{ matrix.AMBIENTE }}' to '${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}'"
+        if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
+        uses: Illusion-Factory-Labs/github-repo-templates/actions/components/sync-existing-env-vars@main
+        with:
+          dry_run: ${{ inputs.dry_run }}
+          variables: ${{ inputs.variables_to_sync }}
+          source_environment: ${{ matrix.AMBIENTE }}
+          destination_environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}
+      
+      - name: "Debug vars source vs vars context"
+        if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ env.GHTOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "=== DEBUG: matrix.AMBIENTE ==="
+          echo "${{ matrix.AMBIENTE }}"
+          echo "=== DEBUG: FINAL_ENV ==="
+          echo "${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}"
+
+          FINAL_ENV="${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}"
+
+          echo "=== DEBUG: vars context snapshot (toJson(vars)) ==="
+          echo '${{ toJson(vars) }}' | jq .
+
+          echo "=== DEBUG: GitHub API environment vars for FINAL_ENV ==="
+          gh api "repos/${{ github.repository }}/environments/$FINAL_ENV/variables" | jq .
