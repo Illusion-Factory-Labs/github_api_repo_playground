@@ -71,6 +71,7 @@ jobs:
 
           echo "=== DEBUG: matrix.AMBIENTE ==="
           echo "${{ matrix.AMBIENTE }}"
+
           echo "=== DEBUG: FINAL_ENV ==="
           echo "${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}"
 
@@ -78,6 +79,3 @@ jobs:
 
           echo "=== DEBUG: vars context snapshot (toJson(vars)) ==="
           echo '${{ toJson(vars) }}' | jq .
-
-          echo "=== DEBUG: GitHub API environment vars for FINAL_ENV ==="
-          gh api "repos/${{ github.repository }}/environments/$FINAL_ENV/variables" | jq .
