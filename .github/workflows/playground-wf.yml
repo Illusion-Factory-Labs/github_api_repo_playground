@@ -58,54 +58,16 @@ jobs:
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/sync-existing-env-vars@main
         with:
           DRY_RUN: ${{ inputs.DRY_RUN }}
-          DEL_ENV: ${{ inputs.DEL_ENV }}
-          
+          DEL_ENV: ${{ inputs.DEL_ENV }}    
       
-      - name: "Debug vars source vs vars context"
-        if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
-        continue-on-error: true
-        shell: bash
-        env:
-          GH_TOKEN: ${{ env.GHTOKEN }}
-        run: |
-          set -euo pipefail
+  remove-env:
+    runs-on: ubuntu-latest
+    needs: test-variables
+    if: ${{ inputs.DEL_ENV == 'true' }}
+    steps:
+      - name: Gerar token para autenticação com a API do GitHub
+        uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
 
-          echo "=== DEBUG: matrix.AMBIENTE ==="
-          echo "${{ matrix.AMBIENTE }}"
-
-          echo "=== DEBUG: FINAL_ENV ==="
-          echo "${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}"
-
-          FINAL_ENV="${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}"
-
-          echo "=== DEBUG: vars context snapshot (toJson(vars)) ==="
-          echo '${{ toJson(vars) }}' | jq .
-
-          echo "=== DEBUG: vars do ambiente de destino '${FINAL_ENV}' ==="
-          CHANGED_VARS_JSON='${{ steps.sync-vars.outputs.changed_variables_json }}'
-          
-          echo "${CHANGED_VARS_JSON:-[]}" | jq .
-
-          missing_vars=0
-          while IFS= read -r var_name; do
-            [[ -z "$var_name" ]] && continue
-
-            echo "=== DEBUG: checking variable '$var_name' in runtime env ==="
-            if printenv "$var_name" >/dev/null; then
-              printf '%s\n' "${!var_name}"
-            else
-              echo "Variable '$var_name' was not exported to the runtime environment."
-              missing_vars=1
-            fi
-          done < <(echo "${CHANGED_VARS_JSON:-[]}" | jq -r '.[]')
-
-          if [[ "$missing_vars" -ne 0 ]]; then
-            echo "One or more changed variables are missing from the runtime environment."
-            exit 1
-          fi
-
-          echo "All changed variables were exported to the runtime environment."
-
-      - name: "Excluir ambiente de variáveis"
-        if: ${{ inputs.DEL_ENV == 'true' && (matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs') }}
+      - name: "Remover ambientes variáveis temporários"
+        id: remove-envs
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
