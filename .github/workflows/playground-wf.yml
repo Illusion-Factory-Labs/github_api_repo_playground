@@ -105,3 +105,9 @@ jobs:
           fi
 
           echo "All changed variables were exported to the runtime environment."
+
+      - name: "Excluir ambiente ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}"
+        if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
+        uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
+        with:
+          DRY_RUN: ${{ inputs.DRY_RUN }}
