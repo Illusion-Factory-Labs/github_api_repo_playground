@@ -88,5 +88,5 @@ jobs:
 
           for var_name in $(echo "${CHANGED_VARS_JSON:-[]}" | jq -r '.[]'); do
             echo "=== DEBUG: value of variable '$var_name' in vars context ==="
-            echo $("${{ env.${var_name} }}")
+            echo "${{ env.$var_name }}"
           done
