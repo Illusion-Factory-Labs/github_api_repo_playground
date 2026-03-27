@@ -49,10 +49,10 @@ jobs:
         AMBIENTE: [des, prd, qa, tqs]
     environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || (matrix.AMBIENTE == 'tqs' &&  'tqs-vars' || matrix.AMBIENTE) }}
     steps:
-      - name: Generate token
+      - name: Gerar token para autenticação com a API do GitHub
         uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
       
-      - name: "Sync repo environment variables from '${{ matrix.AMBIENTE }}' to '${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}'"
+      - name: "Sincronizar variáveis de ambiente"
         id: sync-vars  
         if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/sync-existing-env-vars@main
@@ -106,6 +106,6 @@ jobs:
 
           echo "All changed variables were exported to the runtime environment."
 
-      - name: "Excluir ambiente ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || matrix.AMBIENTE == 'tqs' && 'tqs-vars' }}"
+      - name: "Excluir ambiente de variáveis"
         if: ${{ inputs.DEL_ENV == 'true' && (matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs') }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
