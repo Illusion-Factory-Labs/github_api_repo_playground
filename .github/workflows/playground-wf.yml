@@ -78,13 +78,13 @@ jobs:
         with:
           VARS_FILE: ${{ steps.file-variable-group.outputs.VARS_FILE }}
           VARS_CONTEXT: ${{ toJson(vars) }}
-      - name: "Create Configmap"
-        uses: Illusion-Factory-Labs/github-repo-templates/actions/components/create-configmap-dotnet@main
-      - name: "Replace Variable Group '${{ matrix.AMBIENTE }}'"
-        uses: Illusion-Factory-Labs/github-repo-templates/actions/components/replace-tokens@main
-        with:
-          FILES: "./**/k8s/*.yaml"
-          TOKEN_PREFIX: "#{"
-          TOKEN_SUFFIX: "}#"
-      - name: "Verificar PathBase esperado pelo deploy no AKS"
-        uses: Illusion-Factory-Labs/github-repo-templates/actions/quality/code-check-dotnet@main
+      # - name: "Create Configmap"
+      #   uses: Illusion-Factory-Labs/github-repo-templates/actions/components/create-configmap-dotnet@main
+      # - name: "Replace Variable Group '${{ matrix.AMBIENTE }}'"
+      #   uses: Illusion-Factory-Labs/github-repo-templates/actions/components/replace-tokens@main
+      #   with:
+      #     FILES: "./**/k8s/*.yaml"
+      #     TOKEN_PREFIX: "#{"
+      #     TOKEN_SUFFIX: "}#"
+      # - name: "Verificar PathBase esperado pelo deploy no AKS"
+      #   uses: Illusion-Factory-Labs/github-repo-templates/actions/quality/code-check-dotnet@main
