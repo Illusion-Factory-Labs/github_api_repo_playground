@@ -65,9 +65,6 @@ jobs:
     needs: test-variables
     if: ${{ inputs.DEL_ENV == 'true' }}
     steps:
-      - name: Gerar token para autenticação com a API do GitHub
-        uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/generate-gh-token@main
-
       - name: "Remover ambientes variáveis temporários"
         id: remove-envs
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
