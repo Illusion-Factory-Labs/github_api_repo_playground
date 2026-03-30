@@ -1,0 +1,6 @@
+@API_Conta_SaldoExtrato_HostAddress = http://localhost:5179
+
+GET {{API_Conta_SaldoExtrato_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
