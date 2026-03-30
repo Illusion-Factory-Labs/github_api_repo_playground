@@ -42,6 +42,8 @@ permissions:
 env:
   BUILD_VERSION: ${{ inputs.BUILD_VERSION }}
   DOTNET_VERSION: "${{ inputs.DOTNET_VERSION }}"
+  ADV_SEC_LANG: "csharp"
+  
   GLOBAL_REPO_VAR: github-repo-variables
   GH_PAT: ${{ secrets.GH_PAT }}
   WF_APP_ID: ${{ secrets.WF_APP_ID }}
