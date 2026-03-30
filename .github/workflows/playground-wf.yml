@@ -36,6 +36,7 @@ permissions:
   contents: read
 
 env:
+  BUILD_VERSION: ${{ inputs.BUILD_VERSION }}
   GLOBAL_REPO_VAR: github-repo-variables
   GH_PAT: ${{ secrets.GH_PAT }}
   WF_APP_ID: ${{ secrets.WF_APP_ID }}
