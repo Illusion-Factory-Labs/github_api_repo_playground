@@ -82,8 +82,6 @@ jobs:
       - name: "Remover ambiente temporário de importação de variáveis"
         if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
-        with:
-          ENV_NAME: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || (matrix.AMBIENTE == 'tqs' &&  'tqs-vars' || matrix.AMBIENTE) }}
       
       # - name: "Create Configmap"
       #   uses: Illusion-Factory-Labs/github-repo-templates/actions/components/create-configmap-dotnet@main
