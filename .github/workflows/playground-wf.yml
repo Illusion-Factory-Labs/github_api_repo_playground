@@ -3,11 +3,15 @@ name: Playground Workflow
 on:
   workflow_dispatch:
     inputs:
+      BUILD_VERSION:
+        description: 'Version to build and deploy.'
+        required: true
+        default: '0.0.1'
       DRY_RUN_SYNC:
         description: 'Turn dry-run mode on or off for variable synchronization.'
         required: false
         type: choice
-        default: 'false'
+        default: 'true'
         options:
           - 'true'
           - 'false'
@@ -15,7 +19,7 @@ on:
         description: 'Turn dry-run mode on or off for environment removal.'
         required: false
         type: choice
-        default: 'false'
+        default: 'true'
         options:
           - 'true'
           - 'false'
