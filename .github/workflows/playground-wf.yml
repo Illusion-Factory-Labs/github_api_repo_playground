@@ -38,10 +38,8 @@ defaults:
 jobs:
   test-variables:
     runs-on: ubuntu-latest
-    env:
-      AMBIENTE: ${{ matrix.AMBIENTE }}
     outputs:
-      json: ${{ steps.matrix-output.outputs.json }}
+      json: ${{ steps.temp-env-exists.outputs.json }}
     strategy:
       fail-fast: false
       matrix:
@@ -68,30 +66,23 @@ jobs:
           VARS_CONTEXT: ${{ toJson(vars) }}
           VARS_TEMP_ENV: ${{ steps.sync-temp-env-vars.outputs.changed_variables_json }}
 
-      - name: "Gerar output de jobs matriz"
-        if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
-        uses: Illusion-Factory-Labs/github-repo-templates/actions/components/matrix-output@main
+      - name: "Checar necessidade remoção de ambiente temporário"
+        id: temp-env-exists
+        run: |
+          if [[ "${{ matrix.AMBIENTE  }}" == 'prd' || "${{ matrix.AMBIENTE }}" == 'tqs' ]]; then
+            echo "need_to_remove=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "need_to_remove=false" >> "$GITHUB_OUTPUT"
+          fi
       
   remove-temp-env:
     runs-on: ubuntu-latest
     needs: test-variables
+    if: needs.test-variables.outputs.need_to_remove == 'true'
     steps:
-      # - name: "Token Create"
-      #   uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/githubapp@main
+      - name: "Token Create"
+        uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/githubapp@main
         
-      # - name: "Remover ambiente temporário de importação de variáveis"
-      # uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
-
-      - name: Download All Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: all-outputs
-          pattern: output-*
-
-      - name: Merge Outputs
-        run: |
-          jq -s '.' all-outputs/* > final-outputs.json
-          
-      - name: Display Final Outputs
-        run: cat final-outputs.json
+      - name: "Remover ambiente temporário de importação de variáveis"
+        uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
         
