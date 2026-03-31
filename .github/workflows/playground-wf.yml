@@ -23,6 +23,7 @@ permissions:
 
 env:
   BUILD_VERSION: 1.0.0
+  DOTNET_VERSION: 8.0
   GLOBAL_REPO_VAR: github-repo-variables
   GH_PAT: ${{ secrets.GH_PAT }}
   WF_APP_ID: ${{ secrets.WF_APP_ID }}
