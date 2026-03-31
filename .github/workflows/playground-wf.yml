@@ -38,7 +38,6 @@ defaults:
 jobs:
   test-variables:
     runs-on: ubuntu-latest
-    name: "test-variables-${{ matrix.AMBIENTE }}"
     outputs:
       json: ${{ steps.matrix-output.outputs.json }}
     strategy:
@@ -64,6 +63,7 @@ jobs:
           VARS_FILE: ${{ steps.file-variable-group.outputs.VARS_FILE }}
           VARS_CONTEXT: ${{ toJson(vars) }}
           VARS_TEMP_ENV: ${{ steps.sync-temp-env-vars.outputs.changed_variables_json }}
+      
       - name: Exportar ambientes temporários para os próximos jobs
         id: matrix-output
         if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
@@ -72,16 +72,16 @@ jobs:
           yaml: |
             ambiente-temp: "${{ matrix.AMBIENTE }}-temp"
   
-  remove-temp-env:
-    runs-on: ubuntu-latest
-    name: remove-temp-env-${{ matrix.AMBIENTE }}
-    needs: test-variables
-    strategy:
-      matrix:
-        AMBIENTE: ${{ fromJSON(needs.test-variables.outputs.json).ambiente-temp }}
-    steps:
-      - name: "Token Create"
-        uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/githubapp@main
+  # remove-temp-env:
+  #   runs-on: ubuntu-latest
+  #   name: remove-temp-env-${{ matrix.AMBIENTE }}
+  #   needs: test-variables
+  #   strategy:
+  #     matrix:
+  #       AMBIENTE: ${{ fromJSON(needs.test-variables.outputs.json).ambiente-temp }}
+  #   steps:
+  #     - name: "Token Create"
+  #       uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/githubapp@main
         
-      - name: "Remover ambiente temporário de importação de variáveis"
-        uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
+  #     - name: "Remover ambiente temporário de importação de variáveis"
+  #       uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
