@@ -39,8 +39,9 @@ jobs:
     outputs:
       json: ${{ steps.matrix-output.outputs.json }}
     strategy:
+      fail-fast: false
       matrix:
-        AMBIENTE: ${{ inputs.AMBIENTES }}
+        AMBIENTE: ${{ fromJSON(inputs.AMBIENTES) }}
     environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-temp' || (matrix.AMBIENTE == 'tqs' &&  'tqs-temp' || matrix.AMBIENTE) }}
     steps:
       - name: "Api Dotnet Variables"
