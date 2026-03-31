@@ -78,7 +78,7 @@ jobs:
         with:
           VARS_FILE: ${{ steps.file-variable-group.outputs.VARS_FILE }}
           VARS_CONTEXT: ${{ toJson(vars) }}
-          VARS_TEMP_ENV: ${{ steps.sync-temp-env-vars.outputs.changed_variables_json }}
+          VARS_TEMP_ENV: ${{ steps.sync-temp-env-vars.outputs.changed_variables_json || '{}' }}
   
   remove-temp-env:
     runs-on: ubuntu-latest
@@ -88,9 +88,11 @@ jobs:
         AMBIENTE: [prd-vars, tqs-vars]
     steps:
       - name: "Token Create"
+        if: ${{ matrix.AMBIENTE == 'prd-vars' || matrix.AMBIENTE == 'tqs-vars' }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/githubapp@main
         
       - name: "Remover ambiente temporário de importação de variáveis"
+        if: ${{ matrix.AMBIENTE == 'prd-vars' || matrix.AMBIENTE == 'tqs-vars' }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
         with:
           DRY_RUN_ENV: ${{ inputs.DRY_RUN_ENV }}
