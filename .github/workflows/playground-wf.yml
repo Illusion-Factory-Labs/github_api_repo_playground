@@ -5,8 +5,18 @@ on:
     inputs:
       AMBIENTES:
         required: false
-        type: string
-        default: '["des"]'
+        type: choice
+        options:
+          - '["des"]'
+          - '["qa"]'
+          - '["tqs"]'
+          - '["prd"]'
+          - '["des","qa"]'
+          - '["des","tqs"]'
+          - '["des","prd"]'
+          - '["des","qa","tqs"]'
+          - '["des","qa","tqs","prd"]'
+        default: '["des","qa","tqs","prd"]'
 
 permissions:
   contents: read
