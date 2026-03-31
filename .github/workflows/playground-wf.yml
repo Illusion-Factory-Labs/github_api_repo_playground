@@ -25,10 +25,13 @@ defaults:
 jobs:
   test-variables:
     runs-on: ubuntu-latest
+    name: test-variables-${{ matrix.AMBIENTE.name }}
+    outputs:
+      json: ${{ steps.matrix-output.outputs.json }}
     strategy:
       matrix:
         AMBIENTE: ${{ inputs.AMBIENTES }}
-    environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-vars' || (matrix.AMBIENTE == 'tqs' &&  'tqs-vars' || matrix.AMBIENTE) }}
+    environment: ${{ matrix.AMBIENTE == 'prd' && 'prd-temp' || (matrix.AMBIENTE == 'tqs' &&  'tqs-temp' || matrix.AMBIENTE) }}
     steps:
       - name: "Api Dotnet Variables"
         uses: Illusion-Factory-Labs/github-repo-templates/actions/context/dotnet-api@main
@@ -47,23 +50,27 @@ jobs:
           VARS_FILE: ${{ steps.file-variable-group.outputs.VARS_FILE }}
           VARS_CONTEXT: ${{ toJson(vars) }}
           VARS_TEMP_ENV: ${{ steps.sync-temp-env-vars.outputs.changed_variables_json }}
+      - name: Exportar ambientes temporários para os próximos jobs
+        if: ${{ matrix.AMBIENTE == 'prd' || matrix.AMBIENTE == 'tqs' }}
+        run: beacon-biosignals/matrix-output@v1
+        id: matrix-output
+        with:
+          yaml: |
+            ambiente: "${{ matrix.AMBIENTE.name }}-temp"
   
   remove-temp-env:
     runs-on: ubuntu-latest
     needs: test-variables
+    if: ${{ matrix.AMBIENTE.ambiente == 'prd-temp' || matrix.AMBIENTE.ambiente == 'tqs-temp' }}
     strategy:
       matrix:
-        AMBIENTE: [prd-vars, tqs-vars]
+        AMBIENTE: ${{ fromJSON(needs.test-variables.outputs.json).ambiente }}
     steps:
       - name: "Token Create"
-        if: ${{ matrix.AMBIENTE == 'prd-vars' || matrix.AMBIENTE == 'tqs-vars' }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/githubapp@main
         
       - name: "Remover ambiente temporário de importação de variáveis"
-        if: ${{ matrix.AMBIENTE == 'prd-vars' || matrix.AMBIENTE == 'tqs-vars' }}
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
-        with:
-          DRY_RUN_ENV: ${{ inputs.DRY_RUN_ENV }}
       
       # - name: "Create Configmap"
       #   uses: Illusion-Factory-Labs/github-repo-templates/actions/components/create-configmap-dotnet@main
