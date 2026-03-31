@@ -86,6 +86,9 @@ jobs:
       matrix:
         AMBIENTE: [prd-vars, tqs-vars]
     steps:
+      - name: "Token Create"
+        uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/githubapp@main
+        
       - name: "Remover ambiente temporário de importação de variáveis"
         uses: Illusion-Factory-Labs/github-repo-templates/actions/components/remove-github-env@main
         with:
