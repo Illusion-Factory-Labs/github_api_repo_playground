@@ -78,6 +78,7 @@ jobs:
         with:
           VARS_FILE: ${{ steps.file-variable-group.outputs.VARS_FILE }}
           VARS_CONTEXT: ${{ toJson(vars) }}
+          VARS_TEMP_ENV: ${{ steps.sync-temp-env-vars.outputs.changed_variables_json }}
   
   remove-temp-env:
     runs-on: ubuntu-latest
