@@ -38,6 +38,8 @@ defaults:
 jobs:
   test-variables:
     runs-on: ubuntu-latest
+    env:
+      AMBIENTE: ${{ matrix.AMBIENTE }}
     outputs:
       json: ${{ steps.matrix-output.outputs.json }}
     strategy:
@@ -48,6 +50,8 @@ jobs:
     steps:
       - name: "Api Dotnet Variables"
         uses: Illusion-Factory-Labs/github-repo-templates/actions/context/dotnet-api@main
+        with:
+          AMBIENTE: ${{ matrix.AMBIENTE }}
       - name: "Token Create"
         uses: Illusion-Factory-Labs/github-repo-templates/actions/auth/githubapp@main
       - name: "Sincronizar ambiente temporário para importação de variáveis (evitar aprovação manual)"
