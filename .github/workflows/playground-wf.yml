@@ -62,7 +62,6 @@ jobs:
     runs-on: ubuntu-latest
     name: remove-temp-env-${{ matrix.AMBIENTE.ambiente }}
     needs: test-variables
-    if: ${{ matrix.AMBIENTE == 'prd-temp' || matrix.AMBIENTE == 'tqs-temp' }}
     strategy:
       matrix:
         AMBIENTE: ${{ fromJSON(needs.test-variables.outputs.json).ambiente }}
